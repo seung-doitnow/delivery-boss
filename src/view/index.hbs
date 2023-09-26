@@ -33,9 +33,7 @@
         text-align: center;
     }
 
-    .title {
-        animation: backInLeft 1s
-    }
+    .title {}
 
     .title>h1 {
         font-size: 5vw;
@@ -102,6 +100,13 @@
             transform: scale(1);
             opacity: 1;
         }
+    }
+
+    .backInLeft {
+        animation-duration: 1s;
+        animation-name: backInLeft;
+        animation-fill-mode: both;
+        animation-delay: 0.5s;
     }
 
     @keyframes fadeIn {
@@ -200,6 +205,9 @@
 
         ownerButton.addEventListener('click', function () { window.location.href = '/auth/owner'; });
         customerButton.addEventListener('click', function () { window.location.href = '/auth/customer'; });
+        document.addEventListener("DOMContentLoaded", function () {
+            title.classList.add('backInLeft');
+        });
     </script>
 </body>
 

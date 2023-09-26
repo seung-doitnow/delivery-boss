@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, Validator, validate } from 'class-validator';
-import { info } from 'console';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateStoreDto {
   @IsString()

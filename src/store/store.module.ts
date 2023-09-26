@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { StoreService } from './store.service';
-import { StoreController } from './store.controller';
+import { MulterModule } from '@nestjs/platform-express';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { multerDiskOptions } from 'src/utils/multer.config';
+import { StoreController } from './store.controller';
+import { StoreService } from './store.service';
 
 @Module({
+  imports: [PrismaModule, MulterModule.register(multerDiskOptions)],
   controllers: [StoreController],
   providers: [StoreService],
-  imports: [PrismaModule]
 })
 export class StoreModule {}

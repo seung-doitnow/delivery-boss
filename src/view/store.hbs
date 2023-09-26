@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <title>우리 동네 배달 대장</title>
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+    body {
+        font-family: 'Gowun Dodum', sans-serif;
+    }
+
+    .title {
+        text-align: center;
+        margin: 2vw;
+    }
+
+    .title>h1 {
+        font-size: 3vw;
+    }
+
+    .store-card {
+        width: 50%;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin: 5rem auto;
+        text-align: center;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        height: 240px;
+        display: flex;
+        border-radius: 20px 20px 20px 20px;
+    }
+
+    .store-image {
+        max-width: 30%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .store-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        justify-content: space-between;
+        padding: 1rem;
+        margin-left: 1vw;
+        margin-right: 1vw;
+        margin-bottom: 0.5vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .store-info {
+        white-space: wrap;
+        text-overflow: ellipsis;
+
+        font-size: 1vw;
+        margin-bottom: 3vw;
+    }
+
+    .storeBtn {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 1rem;
+        margin-left: 1vw;
+    }
+
+    .storeBtn button {
+        width: 150px;
+        height: 50px;
+        font-size: 1vw;
+
+        border-color: skyblue;
+        background-color: skyblue;
+    }
+
+    .storeBtn button:hover {
+        border-color: skyblue;
+        background-color: skyblue;
+
+        animation: jelly 0.3s;
+    }
+
+    @keyframes jelly {
+        25% {
+            transform: scale(0.9, 1.1);
+        }
+
+        50% {
+            transform: scale(1.1, 0.9);
+        }
+
+        75% {
+            transform: scale(0.95, 1.05);
+        }
+    }
+</style>
+
+<body>
+    <div class="title">
+        <h1>가게 목록</h1>
+    </div>
+    <div class="store-list">
+        {{#each stores}}
+        <div class="store-card">
+            <img class="img-fluid store-image" src="{{this.image}}" alt="...">
+            <div class="store-content">
+                <h2>{{this.name}}</h2>
+                <p class="store-info">{{this.info}}</p>
+            </div>
+            <div class="storeBtn" id="detailBtn">
+                <button type="button" class="btn btn-primary" value="{{this.id}}" onclick="getStoreDetail({{this.id}})">주문하러 가기</button>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</body>
+
+<script>
+    const getStoreDetail = async (storeId) => {
+        window.location.href = `/stores/${storeId}`;
+    }
+</script>
+
+</html>

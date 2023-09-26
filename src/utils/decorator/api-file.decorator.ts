@@ -27,3 +27,28 @@ export function ApiFile(fieldName: string = 'file') {
     })
   );
 }
+
+export function createStoreDataForm(fieldName: string = 'file') {
+  return applyDecorators(
+    UseInterceptors(FileInterceptor(fieldName)),
+    ApiConsumes('multipart/form-data'),
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          [fieldName]: {
+            // 👈 this property
+            type: 'string',
+            format: 'binary',
+          },
+          name: {
+            type: 'string',
+          },
+          info: {
+            type: 'string',
+          },
+        },
+      },
+    })
+  );
+}

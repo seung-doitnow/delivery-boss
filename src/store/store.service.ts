@@ -12,7 +12,7 @@ export class StoreService {
   constructor(private prisma: PrismaService) {}
 
   // 업장 정보 생성
-  async createStore(ownerId: number, createStoreDto: CreateStoreDto): Promise<{ message: string }> {
+  async createStore(ownerId: number, createStoreDto: CreateStoreDto, imagePath: string): Promise<{ message: string }> {
     // OwnerId가 5 이상일 떄 에러남 => 등록된 OwnerId가 4까지라서 에러 났음
     // TODO: OwnerId 정보를 담을 방법 정해서 코드 수정, (지금은 body에서 직접 입력, Owner : Store = 1 : 1)
     // ? findFirst -> findUnique 바꾸면 where 에서 에러남(where 밑에 빨간 줄)
@@ -27,6 +27,7 @@ export class StoreService {
     await this.prisma.store.create({
       data: {
         OwnerId: ownerId,
+        image: imagePath,
         name: createStoreDto.name,
         info: createStoreDto.info,
       },
@@ -37,17 +38,17 @@ export class StoreService {
 
   // 전체 업장 조회 (메인페이지로 연결)
   async findAllStores(): Promise<FindStoreDto[]> {
-    return this.prisma.store.findMany({ select: { OwnerId: true, name: true, info: true } });
+    return this.prisma.store.findMany({ select: { id: true, OwnerId: true, name: true, info: true, image: true } });
   }
 
   // 업장 세부 조회
   async findOneStore(storeId: number): Promise<FindStoreDto> {
-    return this.prisma.store.findUnique({ where: { id: storeId }, select: { OwnerId: true, name: true, info: true } });
+    return this.prisma.store.findUnique({ where: { id: storeId }, select: { id: true, OwnerId: true, name: true, info: true } });
   }
 
   // 업장 정보 수정
   // TODO 로그인 정보로 수정 권한 추가
-  async updateStore(ownerId: number, storeId: number, updateStoreDto: UpdateStoreDto): Promise<{ message: string }> {
+  async updateStore(ownerId: number, storeId: number, updateStoreDto: UpdateStoreDto, imagePath: string): Promise<{ message: string }> {
     // ? 여기는 return 왜 안붙여도 되는지 궁금하당
     const store = await this.prisma.store.findUnique({ where: { id: storeId } });
 
@@ -59,7 +60,7 @@ export class StoreService {
       throw new HttpException('수정 권한이 없습니다.', HttpStatus.FORBIDDEN);
     }
 
-    await this.prisma.store.update({ where: { id: storeId }, data: updateStoreDto });
+    await this.prisma.store.update({ where: { id: storeId }, data: { ...updateStoreDto, image: imagePath }});
 
     return { message: '업장 정보 수정이 완료되었니다.' };
   }

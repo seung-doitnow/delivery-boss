@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, Validator, validate } from 'class-validator';
-import { info } from 'console';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 // createStoreDto에서 가져온 거 + ownerId 추가
 export class FindStoreDto {
