@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseFilePipeBuilder, Post, Put, Req, UploadedFile, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseFilePipeBuilder, Post, Put, Req, Res, UploadedFile, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Menu } from '@prisma/client';
+import { Response } from 'express';
 import { AuthEntity } from 'src/auth/entity/auth.entity';
 import { ownerAuthGuard } from 'src/auth/owner.jwt-auth.guard';
 import { ApiFile } from 'src/utils/decorator/api-file.decorator';
@@ -56,8 +57,8 @@ export class MenuController {
     type: 'number',
   })
   @Get('/')
-  getMeuns(@Param('storeId') storeId: number) {
-    return this.menuService.getMenus({ StoreId: storeId });
+  async getMeuns(@Res() res: Response, @Param('storeId') storeId: number) {
+    return res.render('store', { menus: await this.menuService.getMenus({ StoreId: storeId })});
   }
 
 

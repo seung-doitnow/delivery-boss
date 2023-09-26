@@ -39,14 +39,14 @@ export class StoreController {
   @ApiOperation({ summary: '전체 업장 조회' })
   @Get()
   async findAllStore(@Res() res: Response) {
-    return res.render('store', { stores: await this.storeService.findAllStores() });
+    return res.render('storeList', { stores: await this.storeService.findAllStores() });
   }
 
   // 세부 업장 조회
   @ApiOperation({ summary: '세부 업장 조회' })
   @Get(':storeId')
   async findOneStore(@Param('storeId') storeId: string) {
-    return this.storeService.findOneStore(+storeId);
+    return await this.storeService.findOneStore(+storeId);
   }
 
   // 업장 정보 수정

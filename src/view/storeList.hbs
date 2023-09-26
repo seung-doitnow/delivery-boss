@@ -29,23 +29,6 @@
         margin: 2vw;
     }
 
-    .title>button {
-        width: 150px;
-        height: 50px;
-        font-size: 1.1vw;
-        margin-top: 2vw;
-
-        border-color: skyblue;
-        background-color: skyblue;
-    }
-
-    .title>button:hover {
-        border-color: skyblue;
-        background-color: skyblue;
-
-        animation: jelly 0.3s;
-    }
-
     .title>h1 {
         font-size: 3vw;
     }
@@ -93,19 +76,16 @@
 
     .storeBtn {
         display: flex;
-        flex-direction: column;
         align-items: center;
         height: 100%;
         padding: 1rem;
         margin-left: 1vw;
-        margin-top: 1vw;
     }
 
     .storeBtn button {
         width: 150px;
         height: 50px;
         font-size: 1vw;
-        margin-top: 2vw;
 
         border-color: skyblue;
         background-color: skyblue;
@@ -116,27 +96,6 @@
         background-color: skyblue;
 
         animation: jelly 0.3s;
-    }
-
-    .quantity-input {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 10px;
-        font-size: 1vw;
-    }
-
-    .quantity-input input {
-        width: 50px;
-        text-align: center;
-        border: none;
-        outline: none;
-    }
-
-    .quantity-input input[type="number"]::-webkit-inner-spin-button,
-    .quantity-input input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: inner-spin-button;
-        opacity: 1;
     }
 
     @keyframes jelly {
@@ -156,78 +115,27 @@
 
 <body>
     <div class="title">
-        <h1>메뉴 목록</h1>
-        <button type="button" class="btn btn-primary" value="{{this.id}}" onclick="createCart({{this.id}})">리뷰
-            보기</button>
+        <h1>가게 목록</h1>
     </div>
     <div class="store-list">
-        {{#each menus}}
+        {{#each stores}}
         <div class="store-card">
             <img class="img-fluid store-image" src="{{this.image}}" alt="...">
             <div class="store-content">
                 <h2>{{this.name}}</h2>
-                <p class="store-info">가격 : {{this.price}}</p>
+                <p class="store-info">{{this.info}}</p>
             </div>
             <div class="storeBtn" id="detailBtn">
-                <div class="quantity-input">
-                    <span>수량 : </span>
-                    <input type="number" value="1" min="1" id="quantity-{{this.id}}">
-                </div>
-                <button type="button" class="btn btn-primary" value="{{this.id}}" onclick="createCart({{this.id}})">장바구니
-                    담기</button>
+                <button type="button" class="btn btn-primary" value="{{this.id}}" onclick="getStoreDetail({{this.id}})">주문하러 가기</button>
             </div>
         </div>
         {{/each}}
     </div>
-    <div class="modal" tabindex="-1" role="dialog" id="myModal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">서버 응답 메시지</h5>
-                </div>
-                <div class="modal-body">
-                    <p id="modalMessage"></p>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 
 <script>
-    const getData = async (quantityId) => {
-        const count = document.getElementById(`quantity-${quantityId}`).value;
-
-        return { count };
-    }
-
-    const createCart = async (menuId) => {
-        const data = await getData(menuId);
-        const token = await document.cookie.replace('=', ' ');
-
-        try {
-            const response = await fetch(`/carts/${menuId}`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `${token}`
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response) {
-                const message = await response.json();
-                modalMessage.innerText = message['message'];
-                $('#myModal').modal('show');
-                return;
-            }
-        } catch (error) {
-            console.error("An error occurred:", error);
-        }
-    }
-
-    const getAllReviews = async () => {
-        
+    const getStoreDetail = async (storeId) => {
+        window.location.href = `/stores/${storeId}/menus`;
     }
 </script>
 
