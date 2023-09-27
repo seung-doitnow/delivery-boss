@@ -19,11 +19,11 @@ export class MypageController {
       user = await this.jwtService.verify(req.cookies['Bearer'], { secret: process.env.JWT_SECRET });
     }
 
-    const menus = await this.prisma.cart.findMany({ where: { OrderId: null, }, select: { Menu: true, count: true }});
+    const menus = await this.prisma.cart.findMany({ where: { OrderId: null, }, select: { Menu: true, id: true, count: true }});
     const ids = [];
     for (let [ index, menu ] of menus.entries()) {
       menus[index]['totalPrice'] = menu.Menu.price * menu.count;
-      ids.push(menu.Menu.id);
+      ids.push(menu.id);
     }
 
     return res.render('cart', { menus, ids });
