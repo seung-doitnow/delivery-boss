@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <title>우리 동네 배달 대장</title>
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+    body {
+        font-family: 'Gowun Dodum', sans-serif;
+    }
+
+    .title {
+        text-align: center;
+        margin: 2vw;
+    }
+
+    .title>h1 {
+        font-size: 3vw;
+    }
+
+    .cart-card {
+        width: 50%;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin: 5rem auto;
+        text-align: center;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        height: 240px;
+        display: flex;
+        border-radius: 20px 20px 20px 20px;
+    }
+
+    .cart-image {
+        max-width: 30%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .cart-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        justify-content: space-between;
+        padding: 1rem;
+        margin-left: 1vw;
+        margin-right: 1vw;
+        margin-bottom: 0.5vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .cart-info {
+        white-space: wrap;
+        text-overflow: ellipsis;
+
+        font-size: 1vw;
+    }
+
+    .cartBtn {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 1rem;
+        margin-left: 1vw;
+        margin-bottom: 4vw;
+    }
+
+    .cartBtn button {
+        width: 150px;
+        height: 50px;
+        font-size: 1vw;
+
+        border-color: skyblue;
+        background-color: skyblue;
+    }
+
+    .cartBtn button:hover {
+        border-color: skyblue;
+        background-color: skyblue;
+
+        animation: jelly 0.3s;
+    }
+
+    @keyframes jelly {
+        25% {
+            transform: scale(0.9, 1.1);
+        }
+
+        50% {
+            transform: scale(1.1, 0.9);
+        }
+
+        75% {
+            transform: scale(0.95, 1.05);
+        }
+    }
+</style>
+
+<body>
+    <div class="cart-list">
+        {{#each orders}}
+        <div class="cart-card">
+            <div class="cart-content">
+                <h2>주문 내역</h2>
+                <p class="cart-info">가격 : {{this.price}}</p>
+            </div>
+            <div class="cartBtn justify-content-center" id="detailBtn">
+                <button type="button" class="btn btn-primary" value="{{this.id}}"
+                    onclick="createComment({{this.id}})">리뷰 작성하기</button>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
+                    <button type="button" class="btn btn-primary modalBtn" id="submitReviewBtn"
+                        onclick="submitReview({{storeId}})">리뷰 작성</button>
+                </div>
+                <div class="modal-body">
+                    <form id="reviewForm">
+                        <div class="form-group mt-1">
+                            <label for="reviewText">리뷰 내용</label>
+                            <textarea class="form-control" id="reviewText" name="reviewText" rows="4"
+                                placeholder="리뷰 내용을 입력하세요"></textarea>
+                        </div>
+                        <div class="quantity-input mt-3">
+                            <label for="starRating">별점</label>
+                            <input type="number" class="form-control" id="starRating" name="starRating" min="1" max="5"
+                                step="1" value="1">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" role="dialog" id="myModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">서버 응답 메시지</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const button = document.getElementById('reviewModal');
+
+    const createComment = async (orderId) => {
+        $('#reviewModal').modal('show');
+
+        console.log(orderId);
+    }
+
+    button.addEventListener('click', createComment);
+
+</script>
+
+</html>
