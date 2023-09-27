@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseFilePipeBuilder, Post, Put, Req, Res, UploadedFile, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Menu } from '@prisma/client';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthEntity } from 'src/auth/entity/auth.entity';
 import { ownerAuthGuard } from 'src/auth/owner.jwt-auth.guard';
 import { ApiFile } from 'src/utils/decorator/api-file.decorator';
@@ -19,7 +20,7 @@ import { MenuService } from './menu.service';
 @Controller('/stores/:storeId/menus')
 @ApiTags('menu CRUD')
 export class MenuController {
-  constructor(private readonly menuService: MenuService) {}
+  constructor(private readonly menuService: MenuService, private readonly jwtService: JwtService) {}
 
   @UseGuards(ownerAuthGuard)
   @ApiBearerAuth()
@@ -57,8 +58,27 @@ export class MenuController {
     type: 'number',
   })
   @Get('/')
-  async getMeuns(@Res() res: Response, @Param('storeId') storeId: number) {
-    return res.render('store', { menus: await this.menuService.getMenus({ StoreId: storeId })});
+  async getMeuns(@Req() req: Request, @Res() res: Response, @Param('storeId') storeId: number) {
+    let isCustomer;
+    if (req.cookies['Bearer']) {
+      const user = await this.jwtService.verify(req.cookies['Bearer'], { secret: process.env.JWT_SECRET });
+
+      if (user.type === 'Owner') {
+        isCustomer = false;
+      } else {
+        isCustomer = true;
+      }
+    } else {
+      isCustomer = true;
+    }
+
+    const menus = await this.menuService.getMenus({ StoreId: storeId });
+    
+    return res.render('store', {
+      storeId,
+      menus,
+      isCustomer,
+    });
   }
 
 
@@ -106,6 +126,7 @@ export class MenuController {
 
     const user: number = req.user.id;
 
+    console.log(params);
     data = { StoreId: Number(params.storeId), menuId: Number(params.menuId), ...data, image: file.path };
 
     return this.menuService.updateMenu(data, user);

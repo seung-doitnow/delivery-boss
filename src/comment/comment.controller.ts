@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, Res, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { customerAuthGuard } from 'src/auth/customer.jwt-auth.guard';
+import { CustomRequest } from 'types/express.type';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { customerAuthGuard } from 'src/auth/customer.jwt-auth.guard';
-import { CustomRequest } from 'types/express.type';
 
 // TODO 사용자는 음식점에 대한 리뷰를 작성하고, 평점을 남길 수 있어야 합니다.
 // TODO Create: 주문번호의 고객 ID 검증, comment db에 추가, CostomerId, OderId, StoreId 도 추가 필요
@@ -32,8 +33,8 @@ export class CommentController {
   // 가게 별 리뷰 조회
   @ApiOperation({ summary: '가게 별 리뷰 조회' })
   @Get('stores/:storeId')
-  async findCommentsStore(@Param('storeId') storeId: string) {
-    return this.commentService.findCommentsStore(+storeId);
+  async findCommentsStore(@Res() res: Response, @Param('storeId') storeId: string) {
+    return res.render('review', { reviews: await this.commentService.findCommentsStore(+storeId) });
   }
 
   // 고객 별 리뷰 조회

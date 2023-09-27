@@ -32,7 +32,7 @@ export class CartsController {
   async getAllCarts(@Req() req: RequestWithCustomer) {
     const customerId: number = req.user.id;
 
-    return this.cartsService.getAllCarts(customerId);
+    return await this.cartsService.getAllCarts(customerId);
   }
 
   // * 장바구니 수정

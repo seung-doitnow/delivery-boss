@@ -33,7 +33,7 @@
         width: 150px;
         height: 50px;
         font-size: 1.1vw;
-        margin-top: 2vw;
+        margin: 2vw;
 
         border-color: skyblue;
         background-color: skyblue;
@@ -139,6 +139,40 @@
         opacity: 1;
     }
 
+    label {
+        font-size margin-top: 0.5vw;
+        margin-bottom: 0.5vw;
+        margin-left: 0.1vw;
+    }
+
+    .modalBtn {
+        border-color: skyblue;
+        background-color: skyblue;
+    }
+
+    .modalBtn:hover {
+        border-color: skyblue;
+        background-color: skyblue;
+
+        animation: jelly 0.3s
+    }
+
+    .fixed-top-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+
+        border-color: skyblue;
+        background-color: skyblue;
+    }
+
+    .fixed-top-button:hover {
+        border-color: skyblue;
+        background-color: skyblue;
+
+        animation: jelly 0.3s
+    }
+
     @keyframes jelly {
         25% {
             transform: scale(0.9, 1.1);
@@ -155,10 +189,18 @@
 </style>
 
 <body>
+    {{#if isCustomer}}
+    <button type="button" class="btn btn-primary fixed-top-button" onclick="toCartList()">장바구니 보러 가기</button>
+    {{else}}
+    {{/if}}
     <div class="title">
-        <h1>메뉴 목록</h1>
-        <button type="button" class="btn btn-primary" value="{{this.id}}" onclick="createCart({{this.id}})">리뷰
+        <h1>메뉴 조회</h1>
+        <button type="button" class="btn btn-primary" onclick="getAllReviews({{storeId}})">리뷰
             보기</button>
+        {{#if isCustomer}}
+        {{else}}
+        <button type="button" class="btn btn-primary" onclick="showModal()">메뉴 등록</button>
+        {{/if}}
     </div>
     <div class="store-list">
         {{#each menus}}
@@ -169,18 +211,87 @@
                 <p class="store-info">가격 : {{this.price}}</p>
             </div>
             <div class="storeBtn" id="detailBtn">
+                {{#if ../isCustomer}}
                 <div class="quantity-input">
                     <span>수량 : </span>
                     <input type="number" value="1" min="1" id="quantity-{{this.id}}">
                 </div>
+                {{/if}}
+                {{#if ../isCustomer}}
                 <button type="button" class="btn btn-primary" value="{{this.id}}" onclick="createCart({{this.id}})">장바구니
                     담기</button>
+                {{else}}
+                <button type="button" class="btn btn-primary" value="{{this.id}}"
+                    onclick="showSecondModal({{../storeId}}, {{this.id}})">메뉴
+                    수정</button>
+                {{/if}}
             </div>
         </div>
-        {{/each}}
+    </div>
+    {{/each}}
+    <div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="storeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="storeModalLabel">메뉴 등록</h5>
+                    <button type="button" class="btn btn-primary modalBtn" id="createBtn"
+                        onclick="createMenu({{storeId}})">메뉴 등록</button>
+                </div>
+                <div class="modal-body">
+                    <form id="storeForm" encType="multipart/form-data">
+                        <div class="form-group mt-1">
+                            <label for="storeImage">메뉴 이미지</label>
+                            <input type="file" class="form-control" id="storeImage" name="storeImage" accept="image/*">
+                            <p id="fileLabel"></p>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="storeName">메뉴 이름</label>
+                            <input type="text" class="form-control" id="storeName" name="storeName" placeholder="메뉴 이름">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="storeDescription">메뉴 가격</label>
+                            <textarea class="form-control" id="storeDescription" name="storeDescription"
+                                placeholder="메뉴 가격"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="updateMenuModal" tabindex="-1" role="dialog" aria-labelledby="storeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="menuModalLabel">메뉴 수정</h5>
+                    <button type="button" class="btn btn-primary modalBtn" id="updateBtn" onclick="updateMenu(1, 1)">메뉴 수정</button>
+                </div>
+                <div class="modal-body">
+                    <form id="storeForm" encType="multipart/form-data">
+                        <div class="form-group mt-1">
+                            <label for="updateStoreImage">메뉴 이미지</label>
+                            <input type="file" class="form-control" id="updateStoreImage" name="storeImage"
+                                accept="image/*">
+                            <p id="fileLabel"></p>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="updateStoreName">메뉴 이름</label>
+                            <input type="text" class="form-control" id="updateStoreName" name="storeName"
+                                placeholder="메뉴 이름">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="updateStoreDescription">메뉴 가격</label>
+                            <textarea class="form-control" id="updateStoreDescription" name="storeDescription"
+                                placeholder="메뉴 가격"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="modal" tabindex="-1" role="dialog" id="myModal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">서버 응답 메시지</h5>
@@ -226,8 +337,96 @@
         }
     }
 
-    const getAllReviews = async () => {
-        
+    const getAllReviews = async (storeId) => {
+        window.location.href = `/comments/stores/${storeId}`;
+    }
+    
+    const toCartList = async () => {
+        window.location.href = '/mypage/carts';
+    }
+
+    const showModal = async () => {
+        $('#menuModal').modal('show');
+    }
+
+    const createMenu = async (storeId) => {
+        const file = document.getElementById('storeImage');
+        const name = document.getElementById('storeName');
+        const price = document.getElementById('storeDescription');
+
+        const formData = new FormData();
+        formData.append('file', file.files[0]);
+        formData.append('name', name.value);
+        formData.append('price', price.value);
+
+        const token = await document.cookie.replace('=', ' ');
+
+        try {
+            const response = await fetch(`/stores/${storeId}/menus`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Authorization': `${token}`
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const message = await response.json();
+                modalMessage.innerText = message['message'];
+                $('#myModal').modal('show');
+                return;
+            }
+
+            location.reload();
+
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    }
+
+    const updateMenu = async (storeId, menuId) => {
+        const file = document.getElementById('storeImage');
+        const name = document.getElementById('storeName');
+        const price = document.getElementById('storeDescription');
+
+        const formData = new FormData();
+        formData.append('file', file.files[0]);
+        formData.append('name', name.value);
+        formData.append('price', price.value);
+
+        const token = await document.cookie.replace('=', ' ');
+
+        try {
+            const response = await fetch(`/stores/${storeId}/menus/${menuId}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Authorization': `${token}`
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const message = await response.json();
+                modalMessage.innerText = message['message'];
+                $('#myModal').modal('show');
+                return;
+            }
+
+            location.reload();
+
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    }
+
+    const showSecondModal = async (storeId, menuId) => {
+        $('#updateMenuModal').modal('show');
+
+        {{!-- const btn = await document.getElementById('updateBtn');
+
+        btn.addEventListener('click', updateMenu(storeId, menuId)) --}}
     }
 </script>
 

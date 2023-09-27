@@ -12,7 +12,7 @@ export class StoreService {
   constructor(private prisma: PrismaService) {}
 
   // 업장 정보 생성
-  async createStore(ownerId: number, createStoreDto: CreateStoreDto, imagePath: string): Promise<{ message: string }> {
+  async createStore(ownerId: number, createStoreDto: CreateStoreDto, imagePath: string): Promise<Store> {
     // OwnerId가 5 이상일 떄 에러남 => 등록된 OwnerId가 4까지라서 에러 났음
     // TODO: OwnerId 정보를 담을 방법 정해서 코드 수정, (지금은 body에서 직접 입력, Owner : Store = 1 : 1)
     // ? findFirst -> findUnique 바꾸면 where 에서 에러남(where 밑에 빨간 줄)
@@ -24,7 +24,7 @@ export class StoreService {
       throw new HttpException('이미 가게가 등록되어 있습니다.', HttpStatus.BAD_REQUEST);
     }
 
-    await this.prisma.store.create({
+    const newStore = await this.prisma.store.create({
       data: {
         OwnerId: ownerId,
         image: imagePath,
@@ -33,7 +33,7 @@ export class StoreService {
       },
     });
 
-    return { message: '업장 정보 생성이 완료되었습니다.' };
+    return { ...newStore };
   }
 
   // 전체 업장 조회 (메인페이지로 연결)
@@ -43,7 +43,7 @@ export class StoreService {
 
   // 업장 세부 조회
   async findOneStore(storeId: number): Promise<FindStoreDto> {
-    return this.prisma.store.findUnique({ where: { id: storeId }, select: { id: true, OwnerId: true, name: true, info: true } });
+    return await this.prisma.store.findUnique({ where: { id: storeId }, select: { id: true, OwnerId: true, name: true, info: true } });
   }
 
   // 업장 정보 수정

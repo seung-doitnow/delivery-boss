@@ -42,7 +42,16 @@ export class OwnerLoginService {
     // res.cookie('accessToken', accessToken, { httpOnly: true, secure: true });
     // res.cookie('refreshToken', refreshToken);
     res.setHeader('Authorization', `Bearer ${accessToken}`);
-    res.json({ message: '로그인에 성공하였습니다.' });
+
+    const Stores = await this.prisma.store.findUnique({ where: { OwnerId: user.id } });
+    let storeId;
+    if (Stores) {
+      storeId = Stores.id;
+    } else {
+      storeId = null;
+    }
+
+    res.json({ message: '로그인에 성공하였습니다.', storeId });
   }
   async renewAccessToken(refreshToken: string, res: Response): Promise<void> {
     let userId: number;

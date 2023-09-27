@@ -13,7 +13,6 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-
     <title>우리 동네 배달 대장</title>
 </head>
 
@@ -169,7 +168,7 @@
                 }
                 const token = response.headers.get('Authorization').split(' ');
                 setCookie(token[0], token[1], 5);
-                window.location.href = '/';
+                window.location.href = '/stores';
             } catch (error) {
                 console.error("An error occurred:", error);
             }

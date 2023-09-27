@@ -38,7 +38,7 @@ export class StoreController {
   // 전체 업장 조회
   @ApiOperation({ summary: '전체 업장 조회' })
   @Get()
-  async findAllStore(@Res() res: Response) {
+  async findAllStore(@Req() req: Request, @Res() res: Response) {
     return res.render('storeList', { stores: await this.storeService.findAllStores() });
   }
 
@@ -56,7 +56,6 @@ export class StoreController {
   @Put(':storeId')
   updateStore(@UploadedFile(new ParseFilePipeBuilder().build({ fileIsRequired: true })) file: Express.Multer.File, @Request() req: CustomRequest, @Param('storeId') storeId: string, @Body() updateStoreDto: UpdateStoreDto) {
     const ownerId = req.user.id;
-    console.log('ho');
     return this.storeService.updateStore(ownerId, +storeId, updateStoreDto, file.path);
   }
 

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <title>우리 동네 배달 대장</title>
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+    body {
+        font-family: 'Gowun Dodum', sans-serif;
+    }
+
+    .title {
+        text-align: center;
+        margin: 2vw;
+    }
+
+    .title>h1 {
+        font-size: 3vw;
+    }
+
+    .cart-card {
+        width: 50%;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin: 5rem auto;
+        text-align: center;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        height: 240px;
+        display: flex;
+        border-radius: 20px 20px 20px 20px;
+    }
+
+    .cart-image {
+        max-width: 30%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .cart-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        justify-content: space-between;
+        padding: 1rem;
+        margin-left: 1vw;
+        margin-right: 1vw;
+        margin-bottom: 0.5vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .cart-info {
+        white-space: wrap;
+        text-overflow: ellipsis;
+
+        font-size: 1vw;
+    }
+
+    .cartBtn {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 1rem;
+        margin-left: 1vw;
+        margin-bottom: 4vw;
+    }
+
+    .cartBtn button {
+        width: 150px;
+        height: 50px;
+        font-size: 1vw;
+
+        border-color: skyblue;
+        background-color: skyblue;
+    }
+
+    .cartBtn button:hover {
+        border-color: skyblue;
+        background-color: skyblue;
+
+        animation: jelly 0.3s;
+    }
+
+    @keyframes jelly {
+        25% {
+            transform: scale(0.9, 1.1);
+        }
+
+        50% {
+            transform: scale(1.1, 0.9);
+        }
+
+        75% {
+            transform: scale(0.95, 1.05);
+        }
+    }
+</style>
+
+<body>
+    <div class="cart-list">
+        {{#each menus}}
+        <div class="cart-card">
+            <img class="img-fluid menu-image" src="{{this.Menu.image}}" alt="...">
+            <div class="cart-content">
+                <h2>{{this.Menu.name}}</h2>
+                <p class="cart-info">가격 : {{this.Menu.price}}</p>
+                <p class="cart-info">개수 : {{this.count}}</p>
+                <p class="cart-info">총 가격 : {{this.totalPrice}}</p>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+    <div class="cartBtn justify-content-center" id="detailBtn">
+        <button type="button" class="btn btn-primary" value="{{this.ids}}"
+            onclick="createOrder([{{this.ids}}])">주문하기</button>
+    </div>
+    <div class="modal" tabindex="-1" role="dialog" id="myModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">서버 응답 메시지</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const createOrder = async (cartIds) => {
+
+        const token = await document.cookie.replace('=', ' ');
+        const data = { cartIds };
+
+        try {
+            const response = await fetch(`/orders`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const message = await response.json();
+                modalMessage.innerText = message['message'];
+                $('#myModal').modal('show');
+                return;
+            }
+
+            window.location.href = `/mypage/orders`;
+
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    }
+</script>
+
+</html>

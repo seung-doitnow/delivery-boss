@@ -13,7 +13,6 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-
     <title>우리 동네 배달 대장</title>
 </head>
 
@@ -49,7 +48,6 @@
 
     .login-form>form .form-group {
         margin-bottom: 2vw;
-
     }
 
     .login-form>form .form-control {
@@ -68,6 +66,24 @@
     }
 
     .login-form>form .btn-primary:hover {
+        border-color: skyblue;
+        background-color: skyblue;
+
+        animation: jelly 0.3s
+    }
+
+    label {
+        font-size margin-top: 0.5vw;
+        margin-bottom: 0.5vw;
+        margin-left: 0.1vw;
+    }
+
+    .modalBtn {
+        border-color: skyblue;
+        background-color: skyblue;
+    }
+
+    .modalBtn:hover {
         border-color: skyblue;
         background-color: skyblue;
 
@@ -103,8 +119,37 @@
             <button type="button" class="btn btn-primary" id="signUpButton">회원가입</button>
         </form>
     </div>
-    <div class="modal" tabindex="-1" role="dialog" id="myModal">
+    <div class="modal fade" id="storeModal" tabindex="-1" role="dialog" aria-labelledby="storeModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="storeModalLabel">가게 등록</h5>
+                    <button type="button" class="btn btn-primary modalBtn" id="createBtn">업장 등록</button>
+                </div>
+                <div class="modal-body">
+                    <form id="storeForm" encType="multipart/form-data">
+                        <div class="form-group mt-1">
+                            <label for="storeImage">가게 이미지</label>
+                            <input type="file" class="form-control" id="storeImage" name="storeImage" accept="image/*">
+                            <p id="fileLabel"></p>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="storeName">가게 이름</label>
+                            <input type="text" class="form-control" id="storeName" name="storeName" placeholder="가게 이름">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="storeDescription">가게 설명</label>
+                            <textarea class="form-control" id="storeDescription" name="storeDescription"
+                                placeholder="가게 설명"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" role="dialog" id="myModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">서버 응답 메시지</h5>
@@ -124,6 +169,7 @@
         const signUpButton = document.getElementById('signUpButton');
         const modal = document.getElementById('myModal');
         const modalMessage = document.getElementById('modalMessage');
+        const createBtn = document.getElementById('createBtn');
 
         const setData = () => {
             const email = document.getElementById("email").value;
@@ -159,7 +205,14 @@
                 }
                 const token = response.headers.get('Authorization').split(' ');
                 setCookie(token[0], token[1], 5);
-                window.location.href = '/';
+
+                const res = await response.json();
+                if (res.storeId) {
+                    window.location.href = `/stores/${res.storeId}/menus`
+                } else {
+                    $('#storeModal').modal('show');
+                }
+
             } catch (error) {
                 console.error("An error occurred:", error);
             }
@@ -186,8 +239,46 @@
             }
         };
 
+        const createStore = async () => {
+            const file = document.getElementById('storeImage');
+            const name = document.getElementById('storeName');
+            const description = document.getElementById('storeDescription');
+
+            const formData = new FormData();
+            formData.append('file', file.files[0]);
+            formData.append('name', name.value);
+            formData.append('info', description.value);
+
+            const token = await document.cookie.replace('=', ' ');
+
+            try {
+                const response = await fetch('/stores', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Authorization': `${token}`
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const message = await response.json();
+                    modalMessage.innerText = message['message'];
+                    $('#myModal').modal('show');
+                    return;
+                }
+
+            const res = await response.json();
+            window.location.href = `/stores/${res.id}/menus`
+
+            } catch (error) {
+                console.error("An error occurred:", error);
+            }
+        }
+
         loginButton.addEventListener('click', login);
         signUpButton.addEventListener('click', signUp);
+        createBtn.addEventListener('click', createStore);
     });
 </script>
 
